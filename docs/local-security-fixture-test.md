@@ -22,7 +22,7 @@ The command writes ignored local files under `local-security-fixtures/`:
 
 Use a disposable Minecraft instance with a separate game directory.
 
-1. Install Meteor Client and `meteor-universal-profile-security-patch-1.0.0-rc.1.jar` in the disposable instance.
+1. Install Meteor Client and `meteor-universal-profile-security-patch-1.0.0-rc.2.jar` in the disposable instance.
 2. Confirm the disposable instance has an empty or controlled `mods/` directory.
 3. Import `local-security-fixtures/clean-control.nbt`; it should import successfully.
 4. Import `local-security-fixtures/blocked-entry-traversal.nbt`; it should fail or be rejected.

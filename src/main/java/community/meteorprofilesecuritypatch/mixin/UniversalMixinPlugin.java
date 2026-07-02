@@ -53,6 +53,10 @@ public final class UniversalMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.endsWith(".ProfileImportPrevalidateMixin")) {
+            return hasIntermediaryImportNbtReadHook(minecraftVersion);
+        }
+
         if (mixinClassName.endsWith(".ProfileImportMixin")) {
             return requiresImportHook(minecraftVersion);
         }
@@ -83,5 +87,9 @@ public final class UniversalMixinPlugin implements IMixinConfigPlugin {
 
     private static boolean requiresImportHook(String version) {
         return SUPPORTED_IMPORT_VERSIONS.contains(version) || version.equals("26.1") || version.startsWith("26.1.");
+    }
+
+    private static boolean hasIntermediaryImportNbtReadHook(String version) {
+        return SUPPORTED_IMPORT_VERSIONS.contains(version);
     }
 }

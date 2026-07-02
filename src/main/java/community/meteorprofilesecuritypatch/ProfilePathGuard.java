@@ -13,7 +13,9 @@ import meteordevelopment.meteorclient.systems.profiles.Profiles;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 
 public final class ProfilePathGuard {
     public static final String BLOCKED_DIRECTORY_NAME = ".blocked-invalid-profile";
@@ -73,6 +75,32 @@ public final class ProfilePathGuard {
         if (canonical.equals(profileDirectory) || !canonical.toPath().startsWith(root)) throw blockedImport();
 
         return canonical;
+    }
+
+    public static boolean isSafeImportTarget(File file) {
+        try {
+            validateImportTarget(file);
+            return true;
+        } catch (IOException ignored) {
+            return false;
+        }
+    }
+
+    public static void deleteProfileDirectory(String name) {
+        File directory = resolveProfileDirectory(name);
+        if (directory == null || !directory.exists()) return;
+
+        try {
+            Files.walk(directory.toPath())
+                .sorted(Comparator.reverseOrder())
+                .forEach(path -> {
+                    try {
+                        Files.deleteIfExists(path);
+                    } catch (IOException ignored) {
+                    }
+                });
+        } catch (IOException ignored) {
+        }
     }
 
     private static File canonicalRoot() throws IOException {
