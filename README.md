@@ -47,7 +47,7 @@ Linux or macOS:
 ./gradlew clean build
 ```
 
-The remapped mod and sources JARs are written to `build/libs`.
+The installable mod JAR is written to `build/libs`.
 
 ## Candidate status
 
