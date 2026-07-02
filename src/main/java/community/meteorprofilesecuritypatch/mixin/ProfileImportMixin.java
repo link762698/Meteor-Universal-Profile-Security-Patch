@@ -10,7 +10,6 @@
 package community.meteorprofilesecuritypatch.mixin;
 
 import community.meteorprofilesecuritypatch.ProfileImportGuard;
-import community.meteorprofilesecuritypatch.ProfilePathGuard;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.systems.profiles.Profile;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,6 +50,7 @@ public abstract class ProfileImportMixin {
             return setting.set(ProfileImportGuard.fallbackProfileName());
         }
 
+        ProfileImportGuard.rememberExpectedProfileDirectory(name);
         return true;
     }
 
@@ -60,12 +60,16 @@ public abstract class ProfileImportMixin {
         remap = false
     )
     private FileOutputStream meteorProfilePatch$openContainedOutput(File file) throws IOException {
-        if (ProfilePathGuard.isSafeImportTarget(file)) {
-            return new FileOutputStream(ProfilePathGuard.validateImportTarget(file));
+        File target;
+
+        try {
+            target = ProfileImportGuard.validateImportOutputFile(file);
+        } catch (IOException | RuntimeException ignored) {
+            ProfileImportGuard.block("Blocked an unsafe Meteor profile import path during write.");
+            return new FileOutputStream(ProfileImportGuard.fallbackOutputFile());
         }
 
-        ProfileImportGuard.block("Blocked an unsafe Meteor profile import path during write.");
-        return new FileOutputStream(ProfileImportGuard.fallbackOutputFile());
+        return new FileOutputStream(target);
     }
 
     @Inject(method = "importProfile", at = @At("RETURN"), cancellable = true, remap = false)

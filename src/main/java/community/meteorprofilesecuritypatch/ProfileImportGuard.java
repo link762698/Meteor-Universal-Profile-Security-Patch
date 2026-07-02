@@ -42,6 +42,9 @@ public final class ProfileImportGuard {
             }
 
             ProfilePathGuard.deleteProfileDirectory(state.fallbackProfileName);
+            if (state.expectedProfileDirectory != null && !state.expectedProfileDirectoryExistedBeforeImport) {
+                ProfilePathGuard.deleteProfileDirectory(state.expectedProfileDirectory.getName());
+            }
             return true;
         } finally {
             IMPORT_STATE.remove();
@@ -64,24 +67,28 @@ public final class ProfileImportGuard {
     }
 
     public static boolean isProfileNameSafe(String name) {
-        if (!ProfilePathGuard.isSafeProfileName(name)) return false;
+        return ProfilePathGuard.isSafeProfileName(name);
+    }
 
-        for (int i = 0; i < name.length(); i++) {
-            char character = name.charAt(i);
-            if (!isAllowedProfileNameCharacter(character)) return false;
-        }
+    public static boolean rememberExpectedProfileDirectory(String profileName) {
+        File directory = ProfilePathGuard.resolveProfileDirectory(profileName);
+        if (directory == null) return false;
 
+        rememberExpectedProfileDirectory(directory);
         return true;
     }
 
-    private static boolean isAllowedProfileNameCharacter(char character) {
-        return (character >= 'a' && character <= 'z')
-            || (character >= 'A' && character <= 'Z')
-            || (character >= '0' && character <= '9')
-            || character == '_'
-            || character == '-'
-            || character == '.'
-            || character == ' ';
+    public static void rememberExpectedProfileDirectory(File directory) {
+        ImportState state = state();
+        state.expectedProfileDirectory = directory;
+        state.expectedProfileDirectoryExistedBeforeImport = directory.exists();
+    }
+
+    public static File validateImportOutputFile(File file) throws IOException {
+        ImportState state = state();
+        if (state.expectedProfileDirectory == null) throw new IOException("Blocked an unsafe Meteor profile import path.");
+
+        return ProfilePathGuard.validateImportTarget(file, state.expectedProfileDirectory);
     }
 
     private static ImportState state() {
@@ -96,6 +103,8 @@ public final class ProfileImportGuard {
 
     private static final class ImportState {
         private final String fallbackProfileName = "profile-security-patch-blocked-" + Long.toUnsignedString(System.nanoTime(), 36);
+        private File expectedProfileDirectory;
+        private boolean expectedProfileDirectoryExistedBeforeImport;
         private boolean blocked;
     }
 }

@@ -1,5 +1,5 @@
 [versions]
-mod = "1.0.0-rc.2"
+mod = "1.0.0-rc.3"
 
 minecraft = "1.21.11"
 yarn = "1.21.11+build.3"

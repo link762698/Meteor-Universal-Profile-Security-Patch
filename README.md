@@ -55,7 +55,7 @@ Local-only profile import regression fixtures can be generated with `tools/gener
 
 ## Candidate status
 
-The current artifact is `meteor-universal-profile-security-patch-1.0.0-rc.2.jar`. It is not a stable release and should not be represented as fully validated until the follow-up runtime test plan is complete.
+The current artifact is `meteor-universal-profile-security-patch-1.0.0-rc.3.jar`. It is not a stable release and should not be represented as fully validated until the follow-up runtime test plan is complete.
 
 ## License
 

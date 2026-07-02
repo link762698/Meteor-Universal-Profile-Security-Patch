@@ -19,6 +19,6 @@ public final class MeteorProfileSecurityPatch implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        LOG.info("Meteor Universal Profile Security Patch 1.0.0-rc.2 initialized.");
+        LOG.info("Meteor Universal Profile Security Patch 1.0.0-rc.3 initialized.");
     }
 }

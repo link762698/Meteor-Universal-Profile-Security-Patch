@@ -48,21 +48,27 @@ public abstract class ProfileImportPrevalidateMixin {
     }
 
     private static boolean meteorProfilePatch$isImportSafe(NbtCompound nbt, File profileFile) {
-        String profileName = nbt.getString("name", profileFile.getName());
-        if (!ProfileImportGuard.isProfileNameSafe(profileName)) return false;
+        try {
+            String profileName = nbt.getString("name", profileFile.getName());
+            if (!ProfileImportGuard.isProfileNameSafe(profileName)) return false;
 
-        File profileDirectory = ProfilePathGuard.resolveProfileDirectory(profileName);
-        if (profileDirectory == null) return false;
+            File profileDirectory = ProfilePathGuard.resolveProfileDirectory(profileName);
+            if (profileDirectory == null) return false;
 
-        for (Map.Entry<String, ?> entry : nbt.entrySet()) {
-            String filename = entry.getKey();
-            if ("name".equals(filename)) continue;
+            for (Map.Entry<String, ?> entry : nbt.entrySet()) {
+                String filename = entry.getKey();
+                if ("name".equals(filename)) continue;
 
-            if (!ProfilePathGuard.isSafeImportTarget(new File(profileDirectory, filename))) {
-                return false;
+                if (!ProfilePathGuard.isSafeImportFilename(filename)) return false;
+                if (!ProfilePathGuard.isSafeImportTarget(new File(profileDirectory, filename), profileDirectory)) {
+                    return false;
+                }
             }
-        }
 
-        return true;
+            ProfileImportGuard.rememberExpectedProfileDirectory(profileDirectory);
+            return true;
+        } catch (RuntimeException ignored) {
+            return false;
+        }
     }
 }

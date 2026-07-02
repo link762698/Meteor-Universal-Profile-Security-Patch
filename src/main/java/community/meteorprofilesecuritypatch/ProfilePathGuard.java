@@ -14,8 +14,10 @@ import meteordevelopment.meteorclient.systems.profiles.Profiles;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.Locale;
 
 public final class ProfilePathGuard {
     public static final String BLOCKED_DIRECTORY_NAME = ".blocked-invalid-profile";
@@ -33,7 +35,7 @@ public final class ProfilePathGuard {
 
             if (candidate.equals(root) || parent == null || !parent.equals(root)) return null;
             return candidate;
-        } catch (IOException ignored) {
+        } catch (IOException | RuntimeException ignored) {
             return null;
         }
     }
@@ -50,40 +52,72 @@ public final class ProfilePathGuard {
         }
     }
 
-    public static File validateImportTarget(File file) throws IOException {
-        if (file == null) throw blockedImport();
+    public static File validateImportTarget(File file, File expectedProfileDirectory) throws IOException {
+        if (file == null || expectedProfileDirectory == null) throw blockedImport();
 
         File rootFile = canonicalRoot();
         Path root = rootFile.toPath();
-        Path raw = file.getAbsoluteFile().toPath();
+        File expectedDirectory = expectedProfileDirectory.getCanonicalFile();
+        File expectedParent = expectedDirectory.getParentFile();
 
-        if (!raw.startsWith(root)) throw blockedImport();
+        if (expectedDirectory.equals(rootFile) || expectedParent == null || !expectedParent.equals(rootFile)) {
+            throw blockedImport();
+        }
 
-        Path relative = root.relativize(raw);
-        if (relative.getNameCount() != 2) throw blockedImport();
+        Path expected = expectedDirectory.toPath();
+        Path raw;
 
-        String profileName = relative.getName(0).toString();
-        String fileName = relative.getName(1).toString();
-        if (isDotSegment(profileName) || isDotSegment(fileName)) throw blockedImport();
+        try {
+            raw = file.getAbsoluteFile().toPath();
+        } catch (InvalidPathException exception) {
+            throw blockedImport();
+        }
 
-        File profileDirectory = resolveProfileDirectory(profileName);
-        if (profileDirectory == null) throw blockedImport();
+        if (!raw.startsWith(expected)) throw blockedImport();
+
+        Path relative = expected.relativize(raw);
+        if (relative.getNameCount() != 1) throw blockedImport();
+
+        String fileName = relative.getFileName().toString();
+        if (!isSafeImportFilename(fileName)) throw blockedImport();
 
         File canonical = file.getCanonicalFile();
         File parent = canonical.getParentFile();
-        if (parent == null || !parent.equals(profileDirectory)) throw blockedImport();
-        if (canonical.equals(profileDirectory) || !canonical.toPath().startsWith(root)) throw blockedImport();
+        if (parent == null || !parent.equals(expectedDirectory)) throw blockedImport();
+        if (canonical.equals(expectedDirectory) || !canonical.toPath().startsWith(root)) throw blockedImport();
 
         return canonical;
     }
 
-    public static boolean isSafeImportTarget(File file) {
+    public static boolean isSafeImportTarget(File file, File expectedProfileDirectory) {
         try {
-            validateImportTarget(file);
+            validateImportTarget(file, expectedProfileDirectory);
             return true;
-        } catch (IOException ignored) {
+        } catch (IOException | RuntimeException ignored) {
             return false;
         }
+    }
+
+    public static boolean isSafeImportFilename(String filename) {
+        if (filename == null || filename.isBlank() || isDotSegment(filename)) return false;
+        if (filename.indexOf('/') >= 0 || filename.indexOf('\\') >= 0) return false;
+        if (filename.endsWith(".") || filename.endsWith(" ")) return false;
+
+        for (int i = 0; i < filename.length(); i++) {
+            char character = filename.charAt(i);
+            if (character < 32 || ":*?\"<>|".indexOf(character) >= 0) return false;
+        }
+
+        String normalized = filename.toLowerCase(Locale.ROOT);
+        int dot = normalized.indexOf('.');
+        String baseName = dot >= 0 ? normalized.substring(0, dot) : normalized;
+
+        return !baseName.equals("con")
+            && !baseName.equals("prn")
+            && !baseName.equals("aux")
+            && !baseName.equals("nul")
+            && !baseName.matches("com[1-9]")
+            && !baseName.matches("lpt[1-9]");
     }
 
     public static void deleteProfileDirectory(String name) {
