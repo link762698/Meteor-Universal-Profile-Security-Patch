@@ -24,6 +24,9 @@ Meteor 1.21.4 through 1.21.8 do not contain file-based profile import. On those 
 - Prevents profile load, save, and delete operations from escaping `Profiles.FOLDER`.
 - On versions with file import, accepts only a direct file inside the selected profile directory.
 - Rejects absolute, nested, traversal, cross-profile, symlink, and junction destinations.
+- Rejects invalid Windows filenames and reserved device names such as `CON`, `NUL`, and `COM1`.
+- Rejects unsafe imports before writing profile files where the supported Meteor/Minecraft hook exists.
+- Cleans up blocked import fallback files and newly-created blocked profile folders.
 - Fails closed if a supported version no longer contains an expected security hook.
 
 The import fix is based on the intent of [MeteorDevelopment/meteor-client#6500](https://github.com/MeteorDevelopment/meteor-client/pull/6500), with additional containment for profile names and all profile file operations.
@@ -37,6 +40,9 @@ It matches the PR by blocking profile import entry-key traversal and poisoned im
 - Exact-profile containment, so imported files must remain direct children of the profile being imported.
 - Cross-profile write blocking.
 - Symlink and junction containment.
+- Invalid Windows filename and reserved device-name blocking.
+- Pre-write import rejection where supported.
+- Cleanup for blocked imports so fake profile folders are not left behind.
 - Profile load, save, delete, and path-resolution guarding.
 - Fail-closed version gating when expected hooks are unavailable.
 
