@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "meteor-universal-profile-security-patch",
+  "version": "${version}",
+  "name": "Meteor Universal Profile Security Patch",
+  "description": "Universal containment patch for Meteor Client profile paths.",
+  "authors": [
+    "Community Patch"
+  ],
+  "contact": {
+    "sources": "https://github.com/link762698/Meteor-Universal-Profile-Security-Patch",
+    "issues": "https://github.com/link762698/Meteor-Universal-Profile-Security-Patch/issues"
+  },
+  "license": "GPL-3.0-only",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "community.meteorprofilesecuritypatch.MeteorProfileSecurityPatch"
+    ]
+  },
+  "mixins": [
+    "meteor-universal-profile-security-patch.mixins.json"
+  ],
+  "custom": {
+    "modmenu": {
+      "parent": {
+        "id": "meteor-client"
+      }
+    }
+  },
+  "depends": {
+    "java": ">=21",
+    "fabricloader": ">=0.16.9",
+    "minecraft": [
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.10",
+      "1.21.11",
+      "~26.1"
+    ],
+    "meteor-client": "*"
+  }
+}

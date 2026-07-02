@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "community.meteorprofilesecuritypatch.mixin",
+  "plugin": "community.meteorprofilesecuritypatch.mixin.UniversalMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ProfileImportMixin",
+    "ProfileMixin",
+    "StringSettingMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
