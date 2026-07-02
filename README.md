@@ -28,6 +28,18 @@ Meteor 1.21.4 through 1.21.8 do not contain file-based profile import. On those 
 
 The import fix is based on the intent of [MeteorDevelopment/meteor-client#6500](https://github.com/MeteorDevelopment/meteor-client/pull/6500), with additional containment for profile names and all profile file operations.
 
+## Relationship to Meteor PR #6500
+
+This project is not a byte-for-byte backport of MeteorDevelopment/meteor-client#6500. It is an unofficial companion patch based on that pull request and its review discussion.
+
+It matches the PR by blocking profile import entry-key traversal and poisoned imported profile names. It also adds defensive hardening for universal, multi-version support:
+
+- Exact-profile containment, so imported files must remain direct children of the profile being imported.
+- Cross-profile write blocking.
+- Symlink and junction containment.
+- Profile load, save, delete, and path-resolution guarding.
+- Fail-closed version gating when expected hooks are unavailable.
+
 ## Build
 
 Requirements:
