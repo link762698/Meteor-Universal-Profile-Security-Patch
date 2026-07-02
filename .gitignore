@@ -1,20 +1,42 @@
-.gradle/
-build/
-out/
-run/
-.idea/
-.vscode/
+# Gradle / Loom generated output
+/.gradle/
+/build/
+/out/
+/run/
+/.loom-cache/
+/remappedSrc/
+
+# Locally copied release-candidate artifacts
+/meteor-universal-profile-security-patch-*.jar
+/meteor-universal-profile-security-patch-*.jar.sha256
+
+# IDE / editor files
+/.idea/
+/.vscode/
+/.settings/
+/.classpath
+/.project
 *.iml
-*.log
-*.tmp
+*.ipr
+*.iws
 *.swp
+
+# Local environment and credentials
 .env
 .env.*
 local.properties
 auth.json
+
+# Minecraft run data / personal client state
 options.txt
+servers.dat
 logs/
 crash-reports/
 screenshots/
 saves/
 mods/
+config/
+
+# Temporary files
+*.log
+*.tmp
