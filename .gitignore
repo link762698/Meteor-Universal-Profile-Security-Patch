@@ -5,6 +5,7 @@
 /run/
 /.loom-cache/
 /remappedSrc/
+/local-security-fixtures/
 
 # Locally copied release-candidate artifacts
 /meteor-universal-profile-security-patch-*.jar
@@ -40,3 +41,5 @@ config/
 # Temporary files
 *.log
 *.tmp
+__pycache__/
+*.py[cod]

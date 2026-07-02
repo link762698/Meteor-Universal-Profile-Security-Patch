@@ -49,6 +49,10 @@ Linux or macOS:
 
 The installable mod JAR is written to `build/libs`.
 
+## Local security fixture test
+
+Local-only profile import regression fixtures can be generated with `tools/generate-local-security-fixtures.py`. See `docs/local-security-fixture-test.md` for the disposable-instance test procedure.
+
 ## Candidate status
 
 The current artifact is `meteor-universal-profile-security-patch-1.0.0-rc.1.jar`. It is not a stable release and should not be represented as fully validated until the follow-up runtime test plan is complete.
